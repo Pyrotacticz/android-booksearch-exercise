@@ -1,12 +1,17 @@
 package com.codepath.android.booksearch.activities
 
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,6 +42,8 @@ class BookListActivity : AppCompatActivity() {
         // Checkpoint #3
         // Switch Activity to Use a Toolbar
         // see http://guides.codepath.org/android/Using-the-App-ToolBar#using-toolbar-as-actionbar
+        val tb = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(tb)
 
         // Initialize the adapter
         bookAdapter = BookAdapter(this, booksList)
@@ -51,12 +58,14 @@ class BookListActivity : AppCompatActivity() {
                 // Checkpoint #5
                 // Hook up Book Detail View
                 // see https://guides.codepath.org/android/Using-the-RecyclerView#attaching-click-handlers-using-listeners for setting up click listeners
-
                 // Create Intent to start BookDetailActivity
                 // Get Book at the given position
                 // Pass the book into details activity using extras
                 // see http://guides.codepath.org/android/Using-Intents-to-Create-Flows
                 // see kotlin-parcelize https://developer.android.com/kotlin/parcelize plugin to do this
+                val intent = Intent(this@BookListActivity, BookDetailActivity::class.java)
+                intent.putExtra("book", booksList[position])
+                startActivity(intent)
             }
         })
         // Attach the adapter to the RecyclerView
@@ -66,7 +75,7 @@ class BookListActivity : AppCompatActivity() {
         rvBooks.layoutManager = LinearLayoutManager(this)
 
         // Fetch the data remotely
-        fetchBooks("Oscar Wilde")
+        //fetchBooks("Oscar Wilde")
     }
 
     // Executes an API call to the OpenLibrary search endpoint, parses the results
@@ -107,6 +116,25 @@ class BookListActivity : AppCompatActivity() {
         // Checkpoint #4
         // Add SearchView to Toolbar
         // Refer to http://guides.codepath.org/android/Extended-ActionBar-Guide#adding-searchview-to-actionbar guide for more details
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView =  MenuItemCompat.getActionView(searchItem) as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                searchView.clearFocus()
+                if (query != null) {
+                    fetchBooks(query)
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText != null) {
+                    fetchBooks(newText)
+                }
+                return false
+            }
+
+        })
 
 
         // Checkpoint #7 Show Progress Bar

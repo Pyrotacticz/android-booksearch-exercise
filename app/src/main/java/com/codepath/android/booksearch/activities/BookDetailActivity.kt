@@ -1,5 +1,6 @@
 package com.codepath.android.booksearch.activities
 
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
 import android.os.Bundle
@@ -7,9 +8,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.codepath.android.booksearch.R
 import com.codepath.android.booksearch.R.id
 import com.codepath.android.booksearch.R.layout
+import com.codepath.android.booksearch.adapters.BookAdapter
+import com.codepath.android.booksearch.models.Book
 
 class BookDetailActivity : AppCompatActivity() {
     private var ivBookCover: ImageView? = null
@@ -24,6 +29,15 @@ class BookDetailActivity : AppCompatActivity() {
         tvAuthor = findViewById<View>(id.tvAuthor) as TextView
 
         // Extract book object from intent extras
+        val book = intent.getParcelableExtra<Book>("book")
+        tvTitle!!.text = book!!.title
+        tvAuthor!!.text = book.author
+        Glide.with(this)
+            .load(Uri.parse(book.coverUrl))
+            .apply(
+                RequestOptions()
+                .placeholder(R.drawable.ic_nocover))
+            .into(ivBookCover!!)
 
         // Use book object to populate data into views
         // Checkpoint #5
@@ -31,7 +45,6 @@ class BookDetailActivity : AppCompatActivity() {
         // Follow using a Toolbar guide to set the Toolbar as the ActionBar.
         // Change activity title to reflect the book title by referring to the Configuring The ActionBar guide.
         // (Bonus) Get additional book information like publisher and publish_year from the Books API and display in details view.
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

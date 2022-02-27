@@ -1,18 +1,21 @@
 package com.codepath.android.booksearch.models
 
+import android.os.Parcelable
 import android.text.TextUtils
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.ArrayList
+import kotlinx.parcelize.Parcelize
 
-class Book(
+@Parcelize
+class Book (
     var openLibraryId: String? = null,
     var author: String? = null,
     var title: String? = null,
     // Get book cover from covers API
-    val coverUrl: String = "https://covers.openlibrary.org/b/olid/$openLibraryId-L.jpg?default=false"
-) {
+    var coverUrl: String = "https://covers.openlibrary.org/b/olid/$openLibraryId-L.jpg?default=false"
+) : Parcelable {
 
     companion object {
         // Returns a Book given the expected JSON
@@ -23,6 +26,7 @@ class Book(
                 // Check if a cover edition is available
                 if (jsonObject.has("cover_edition_key")) {
                     book.openLibraryId = jsonObject.getString("cover_edition_key")
+                    book.coverUrl = "https://covers.openlibrary.org/b/olid/" + book.openLibraryId + "-L.jpg?default=false"
                 } else if (jsonObject.has("edition_key")) {
                     val ids = jsonObject.getJSONArray("edition_key")
                     book.openLibraryId = ids.getString(0)
